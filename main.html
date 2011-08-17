@@ -1,0 +1,33 @@
+<html>
+<head>
+<script src="jquery.js"></script>
+<style>
+.Success {
+background-color: lightgreen;
+}
+.Failure {
+background-color: red;
+}
+.box {
+height: 60px;
+border: 1px solid #000;
+}
+</style>
+</head>
+<body>
+<div id="status"></div>
+<script>
+
+$.get('cctray.xml', function(data) {
+	var projects = $(data).find('Project');
+	for(i=0;i<projects.length;i++) {
+		var pDiv = document.createElement("div");
+		var status = $(projects[i]).attr("lastBuildStatus");
+		pDiv.innerHTML = status;
+		$(pDiv).attr("class","box "+status);
+		$("#status").append(pDiv);
+	}
+});
+</script>
+</body>
+</html>

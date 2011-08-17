@@ -1,0 +1,83 @@
+<html>
+	<head>
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript">
+			var refreshTime, goUrl, refreshTimer, projectKeys, webUrl, status;
+
+			function init() {
+				goUrl = localStorage.url;
+				refreshTime = localStorage.refreshTime || 1;
+				refreshTime *= 60 * 1000; // minutes in ms
+				projectKeys = localStorage.projectKeys;
+				doRequest();
+			}
+
+			function doRequest() {
+				try {
+					$.get(goUrl, handleResponse);
+				} catch (e) {
+					handleStatus('error');
+				}
+			}
+			
+			function handleResponse(data) {
+				var projects = $(data).find('Project');
+				status = 'Success'; webUrl = goUrl;
+				for(var i=0;i<projects.length;i++) {
+					var project = xmlToHash(projects[i]); 
+					if(projectKeys) {
+						if(inProjectKeys(project.name)) updateIfBuildIsBroken(project.lastBuildStatus, project.webUrl);
+					} else {
+						updateIfBuildIsBroken(project.lastBuildStatus, project.webUrl);
+					}
+				}
+				handleStatus(status);
+				updateBrowserAction(webUrl);				
+			}			
+			
+			function updateIfBuildIsBroken(buildStatus, buildUrl) {
+				if(buildStatus == 'Failure') {
+					status = buildStatus;
+					webUrl = buildUrl;
+				}				
+			}
+			
+			function xmlToHash(project) {
+				return {"name":$(project).attr('name'), 
+				"lastBuildStatus":$(project).attr("lastBuildStatus"),
+				"webUrl":$(project).attr("webUrl")}
+			}
+			
+			function inProjectKeys(name) {
+				var keys = projectKeys.split(",");
+				for(var i=0;i<keys.length;i++) {
+					if(name.toLowerCase().indexOf(keys[i].trim()) >= 0) return true;
+				}
+				return false;
+			}
+
+			function handleStatus(status) {
+				updateStatus(status);
+				window.clearTimeout(refreshTimer);
+				refreshTimer = window.setTimeout(doRequest, refreshTime);
+			}
+
+			function updateStatus(status) {
+				chrome.browserAction.setIcon({path:'images/'+status+'.png'});
+				chrome.browserAction.setBadgeText({text:''});
+			}
+			
+			function updateBrowserAction(url) {
+				chrome.browserAction.onClicked.addListener(function(tab) {
+					chrome.tabs.update(tab.id, {url:url});
+				});
+			}			
+
+			window.onload = function() {
+				window.setTimeout(init, 10);
+			}
+			
+			updateBrowserAction(goUrl);
+		</script>
+	</head>
+</html>

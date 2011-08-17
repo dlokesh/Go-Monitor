@@ -1,0 +1,18 @@
+{
+	"name": "Go Build Monitor",
+	"version": "0.1.2",
+	"description": "Simple tool monitor your Go Enterprise/Community Edition build server",
+	"icons": { "48": "images/go.jpeg",
+			   "128": "images/go-logo.png"},	
+	"browser_action": {
+		"default_icon": "images/default.png",
+		"default_title": "Go Monitor"
+	},
+	"background_page": "background.html",
+	"options_page": "options.html",
+	"permissions": [
+		"tabs",
+		"http://*/",
+		"https://*/"		
+	]
+}

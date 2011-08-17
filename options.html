@@ -1,0 +1,141 @@
+<html>
+	<head>
+		<title>Go Build Monitor - Settings</title>
+		<script type="text/javascript" src="jquery.js"></script>
+		<style>
+
+	  body, html {
+	    font-size: 13px;
+	    font-family: Arial, Verdana, sans-serif;
+	    text-align: center;
+	  }
+
+	  h1, h2, h3 {
+	    font-size: 1em;
+	    margin: 0;
+	  }
+
+	  h3 {
+	    font-weight: normal;
+	    color: #666;
+	  }
+
+	  ul, ol {
+	    margin: 0 0 1em;
+	    padding: 0;
+	    list-style-type: none;
+	  }
+
+	  li {
+	    margin: 5px;
+	  }
+
+	  button {
+	    font-size: 1.5em;
+	  }
+
+	  .title {
+	    font-size: 2em;
+	    font-weight: bold;
+	    font-family: Helvetica,Arial, Verdana, sans-serif;
+	    margin-bottom: 1em;
+	    padding-bottom: .5em;
+	    border-bottom: 1px solid #ddd;
+	  }
+
+	  #options {
+	    display: inline-block;
+	    margin: 4em auto 0;
+	    padding: 2em;
+	    background: #efefef;
+	    -webkit-border-radius: 1em 1em;
+	    text-align: left;
+	  }
+
+		input#save {
+			font-weight: bold;
+		}
+		
+		input[type='text'] {
+			width: 300px;
+		}		
+
+		fieldset {
+			margin-top: 1.5em;
+			margin-bottom: 1.5em;
+			width: 20em;
+		}
+
+		div.optionform {
+			width: 20em;
+			padding: 0 0.75em;
+		}
+
+		div.optionform a {
+			float: right;
+		}
+		</style>
+		<script type="text/javascript">
+			var saveButton,url,refreshRate, projectKeys;
+
+			function init() {
+				saveButton = document.getElementById('save');
+				url = document.getElementById('url');
+				url.value = localStorage.url || 'http://';
+
+				refreshRate = document.getElementById('refresh');
+				refreshRate.value = localStorage.refreshTime || 1;
+				
+				projectKeys = document.getElementById('projectKeys');
+				projectKeys.value = localStorage.projectKeys || '';
+			}
+
+			function save() {
+				if (url.value != '') {
+					localStorage.url = url.value;
+				} else {
+					delete localStorage.url;
+				}
+
+				if (refreshRate.value != 1) {
+					localStorage.refreshTime = refreshRate.value;
+				} else {
+					delete localStorage.refreshTime;
+				}
+				
+				if (projectKeys.value != '') {
+					localStorage.projectKeys = projectKeys.value;
+				} else {
+					delete localStorage.projectKeys;
+				}				
+
+			 // Update status to let user know options were saved.
+			  	$("#status").show();
+			  	setTimeout(function() {
+			    	$("#status").hide();
+			  	}, 1000);
+				chrome.extension.getBackgroundPage().init();
+			}
+		</script>
+	</head>
+	<body onload="init()">
+		<div id="options">
+		<h1 class="title">Go Build Monitor Options</h1>
+		<h2>Go Server URL</h2>
+		<h3>eg. http://1.1.1.1:8153/go/cctray.xml</h3>
+		<input type="text" id="url" name="url"/>
+		<h2>Refresh Rate:</h2>
+		<h3>in mins</h3>		
+		<input type="text" id="refresh" name="refresh"/>
+		<h2>Pipelines to be monitored:</h2>
+		<h3>Comma separated values. Leaving it blank will monitor all projects</h3>				
+		<input type="text" id="projectKeys" name="projectKeys"/>
+
+		<div class="optionform">
+			<input type="button" id="save" name="save" value="Save" onclick="save()"/>
+			<input type="button" id="cancel" name="cancel" value="Cancel" onclick="window.close()"/>
+			<span id="status" style="display:none">Options saved.</span>
+		</div>
+		</div>
+	</body>
+</html>
