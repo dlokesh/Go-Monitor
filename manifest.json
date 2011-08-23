@@ -1,6 +1,6 @@
 {
 	"name": "Go Build Monitor",
-	"version": "0.1.2",
+	"version": "0.2",
 	"description": "Simple tool monitor your Go Enterprise/Community Edition build server",
 	"icons": { "48": "images/go.jpeg",
 			   "128": "images/go-logo.png"},	
