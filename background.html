@@ -13,26 +13,30 @@
 			}
 
 			function doRequest() {
-				try {
-					$.get(goUrl, handleResponse);
+        try {
+          $.ajax({ url: goUrl, success: handleResponse, error:function(){handleStatus('error');}, timeout: 10000 });
 				} catch (e) {
 					handleStatus('error');
 				}
 			}
 			
 			function handleResponse(data) {
-				var projects = $(data).find('Project');
-				status = 'Success'; webUrl = goUrl;
-				for(var i=0;i<projects.length;i++) {
-					var project = xmlToHash(projects[i]); 
-					if(projectKeys) {
-						if(inProjectKeys(project.name)) updateIfBuildIsBroken(project.lastBuildStatus, project.webUrl);
-					} else {
-						updateIfBuildIsBroken(project.lastBuildStatus, project.webUrl);
-					}
-				}
-				handleStatus(status);
-				updateBrowserAction(webUrl);				
+        try {
+          var projects = $(data).find('Project');
+          status = 'Success'; webUrl = goUrl;
+          for(var i=0;i<projects.length;i++) {
+            var project = xmlToHash(projects[i]); 
+            if(projectKeys) {
+              if(inProjectKeys(project.name)) updateIfBuildIsBroken(project.lastBuildStatus, project.webUrl);
+            } else {
+              updateIfBuildIsBroken(project.lastBuildStatus, project.webUrl);
+            }
+          }
+          handleStatus(status);
+          updateBrowserAction(webUrl);				
+        } catch (e) {
+            handleStatus('error');
+        }
 			}			
 			
 			function updateIfBuildIsBroken(buildStatus, buildUrl) {
